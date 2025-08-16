@@ -40,10 +40,10 @@ export default defineNuxtConfig({
     { src: "~/plugins/auth.client.ts", mode: "client" },
   ],
   i18n: {
-    defaultLocale: "pt-BR",
+    defaultLocale: "br",
     locales: [
-      { code: "pt-BR", name: "Brasil", file: "br.json" },
-      { code: "en", name: "English", file: "br.json" },
+      { code: "br", name: "Brasil", file: "br.json" },
+      { code: "en", name: "English", file: "en.json" },
     ],
   },
 });

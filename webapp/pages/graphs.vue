@@ -1,18 +1,12 @@
 <template>
-  <div>
-    GRAPH-PAGES
-  </div>
   <Serial />
   <div class="p-4 space-y-8">
    <div v-if="sensorIds.length === 0" class="text-gray-500 mt-4">
-      No sensor data available yet.
+      {{ $t("no_sensor_data") }}
     </div>
-
-    <!-- Create a chart for each sensor -->
-    <div v-for="sensorId in sensorIds" :key="sensorId">
-      <h3 class="text-lg font-bold mb-2">Sensor: {{ sensorId }}</h3>
-      <SensorChart :sensorId="sensorId" />
-    </div>
+  </div>
+  <div v-for="sensorId in sensorIds" :key="sensorId">
+    <SensorChart :sensorId="sensorId" />
   </div>
 
   <LineChart/>

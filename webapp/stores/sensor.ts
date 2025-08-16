@@ -12,6 +12,16 @@ export const useSensorStore = defineStore('sensor', () => {
 
   let port: SerialPort | null = null;
   let reader: ReadableStreamDefaultReader<string> | null = null;
+  let stopRequested = false
+  let readLoopPromise: Promise<void> | null = null
+  let pipeDone: Promise<void> | null = null
+  let decoder: TextDecoderStream | null = null
+
+  let connectionStartTime = Date.now()
+
+  function setConnectionStart() {
+    connectionStartTime = Date.now()
+  }
 
   function parseSensorLine(line: string) {
     const [id, timestampStr, valueStr] = line.trim().split(':');
@@ -31,21 +41,22 @@ export const useSensorStore = defineStore('sensor', () => {
     port = await navigator.serial.requestPort();
     await port.open({ baudRate });
 
-    const decoder = new TextDecoderStream();
-    const inputStream = decoder.readable;
-    port.readable?.pipeTo(decoder.writable);
-
-    reader = inputStream.getReader();
-    isConnected.value = true;
-
-    readLoop();
+    decoder = new TextDecoderStream()
+    const inputStream = decoder.readable
+    pipeDone = port.readable?.pipeTo(decoder.writable)
+  
+    reader = inputStream.getReader()
+    isConnected.value = true
+    setConnectionStart()
+    stopRequested = false
+    readLoopPromise = readLoop()
   }
 
   async function readLoop() {
     if (!reader) return;
 
     try {
-      while (true) {
+      while (!stopRequested) {
         const { value, done } = await reader.read();
         if (done) break;
 
@@ -70,28 +81,56 @@ export const useSensorStore = defineStore('sensor', () => {
     }
   }
 
-  async function sendMessage(message: string) {
-    if (!port || !port.writable) return;
-    const writer = port.writable.getWriter();
-    await writer.write(new TextEncoder().encode(message + '\n'));
-    writer.releaseLock();
-  }
-
   async function disconnect() {
+    stopRequested = true;
     try {
-      reader?.cancel();
-      await port?.close();
-      isConnected.value = false;
+    await reader?.cancel().catch(() => {})
+    await readLoopPromise?.catch(() => {})
+    await reader?.releaseLock()
+    await pipeDone?.catch(() => {})
+    await port?.close()
+    isConnected.value = false
     } catch (err) {
       console.error('Disconnect error:', err);
     }
+  }
+
+  async function clearSensorData() {
+     sensorData.value = {}
+  }
+
+  async function clearSensorDataById(id: string | undefined) {
+    console.log("CLEAR ID", id)
+    if (id){
+      if (sensorData.value[id]) {
+        delete sensorData.value[id]
+      }
+    }
+  }
+
+  function getLastDataSlice(sensorId: string, seconds: number): [number[], number[]] {
+    const sensor = sensorData.value[sensorId]
+    if (!sensor) return [[], []]
+  
+    const [timestamps, values] = sensor
+    if (timestamps.length === 0) return [[], []]
+  
+    const latestTimestamp = timestamps[timestamps.length - 1]
+    const cutoff = latestTimestamp - (seconds * 1000)
+  
+    const startIndex = timestamps.findIndex(ts => ts >= cutoff)
+    if (startIndex === -1) return [[], []]
+  
+    return [timestamps.slice(startIndex), values.slice(startIndex)]
   }
 
   return {
     sensorData,
     isConnected,
     connectSerial,
-    sendMessage,
     disconnect,
+    clearSensorData,
+    clearSensorDataById,
+    getLastDataSlice
   };
 });

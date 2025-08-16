@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <h2 class="text-xl font-semibold mb-4">Senoide em Tempo Real (uPlot)</h2>
+    <h2 class="text-xl font-semibold mb-4">Sensor: >Exemplo</h2>
 
     <!-- Controles para ajustar frequência, amplitude e janela -->
     <div class="flex space-x-4 mb-6">
@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .chart-container {
   width: 100%;
-  height: 80vh; /* Ajustável conforme necessidade */
+  height: 20vh; /* Ajustável conforme necessidade */
   overflow: hidden;
 }
 </style>

@@ -32,6 +32,7 @@ async function login({ username, password }): Promise<void> {
   })
     .then(async (result) => {
       await user.setToken(result);
+      await user.hydrateFromCookie();
       navigateTo("/");
     })
     .catch(() => alert("Bad credentials"));
@@ -39,10 +40,6 @@ async function login({ username, password }): Promise<void> {
 </script>
 
 <template>
-  <div>
-    <h1>Welcome to Login</h1>
-  </div>
-
   <NewLogin
     :open="showModal"
     :username="username"

@@ -2,5 +2,11 @@
   "welcome": "Bem Vindo",
   "username": "Nome de Usuário",
   "password": "Senha",
-  "login": "Entrar"
+  "login": "Entrar",
+  "connect": "Conectar",
+  "disconnect": "Desconectar",
+  "clear":"Limpar",
+  "logout":"Sair",
+  "hello": "Olá",
+  "no_sensor_data": "Sem dados de sensor disponívies."
 }
