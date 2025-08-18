@@ -1,8 +1,8 @@
-import asyncio
+
 
 from radio.receiver import Receiver
 from radio.sender import Sender
-
+from config import files
 
 def FactoryDevice(receiver):
 
@@ -19,14 +19,14 @@ def FactoryDevice(receiver):
 
 if __name__ == "__main__":
     try:
-        RECEIVER = False
+        RECEIVER = files.has_config("receiver")
         device = FactoryDevice(RECEIVER)
 
-        loop = asyncio.get_event_loop()   
+        
         for task in device.get_async():
-            loop.create_task(task())
+            device.loop.create_task(task())
 
-        loop.run_forever()
+        device.loop.run_forever()
 
     except KeyboardInterrupt:
         print("Program stopped.")

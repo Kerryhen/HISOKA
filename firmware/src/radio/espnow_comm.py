@@ -1,6 +1,7 @@
 import aioespnow
 import network
 import time
+import asyncio
 
 class ESPNOW_BASE:
     def __init__(self):
@@ -9,6 +10,7 @@ class ESPNOW_BASE:
         self.esp = aioespnow.AIOESPNow()
         self.broadcastaddr = b'\xff'*6
         self.mac = network.WLAN(network.STA_IF).config('mac')
+        self.loop = asyncio.get_event_loop()   
     
     def init(self):
         """Initialize Wi-Fi and ESP-NOW."""
@@ -16,8 +18,8 @@ class ESPNOW_BASE:
         self.esp.active(True)
         self.esp.add_peer(self.broadcastaddr)
 
-    def broadcast(self, message):
-        self.esp.send(self.broadcastaddr, message)
+    async def broadcast(self, message):
+        await self.esp.asend(self.broadcastaddr, message)
 
 
 class logger:

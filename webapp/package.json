@@ -27,6 +27,7 @@
     "@vueuse/core": "^13.1.0",
     "@vueuse/nuxt": "^13.1.0",
     "apexcharts": "^4.5.0",
+    "better-sqlite3": "^12.2.0",
     "commitizen": "^4.3.1",
     "eslint": "^9.24.0",
     "mande": "^2.0.9",

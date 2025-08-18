@@ -12,10 +12,3 @@ def load_wifi_config():
             return ujson.load(f)
     except OSError:
         return None
-
-def has_config():
-    try:
-        with open(CONFIG_FILE, "r"):
-            return True
-    except OSError:
-        return False
