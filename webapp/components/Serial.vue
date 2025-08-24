@@ -1,8 +1,20 @@
 <template>
   <div class="p-5">
     <UButtonGroup size="xl">
-      <UButton v-if="!sensorStore.isConnected" @click="connect" color="success" variant="subtle" :label="$t('connect')" />
-      <UButton v-else @click="disconnect" color="error" variant="subtle" :label="$t('disconnect')" />
+      <UButton
+        v-if="!sensorStore.isConnected"
+        @click="connect"
+        color="success"
+        variant="subtle"
+        :label="$t('connect')"
+      />
+      <UButton
+        v-else
+        @click="disconnect"
+        color="error"
+        variant="subtle"
+        :label="$t('disconnect')"
+      />
     </UButtonGroup>
   </div>
 </template>

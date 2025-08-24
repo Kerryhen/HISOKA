@@ -32,40 +32,40 @@ export default defineNuxtConfig({
     "@nuxtjs/i18n",
     "nuxt-auth-utils",
     "@pinia/nuxt",
-    'nuxt-svgo',
+    "nuxt-svgo",
   ],
   svgo: {
-       autoImportPath: '~/assets/svg/',
-       defaultImport: 'component'
+    autoImportPath: "~/assets/svg/",
+    defaultImport: "component",
   },
   css: ["~/assets/css/main.css"],
   fonts: {
     families: [
       // do not resolve this font with any provider from `@nuxt/fonts`
-      { name: 'League Gothic', provider: 'google' },
+      { name: "League Gothic", provider: "google" },
       // only resolve this font with the `google` provider
       // { name: 'My Font Family', provider: 'google' },
       // specify specific font data - this will bypass any providers
       //{ name: 'Other Font', src: 'https://example.com/font.woff2', weight: 'bold' },
-    ]
+    ],
   },
   ui: {
     theme: {
       colors: [
-        'primary',
-        'secondary',
-        'neutral',
-        'first',
-        'second',
-        'third',
-        'fourth',
-        'fifth',
-        'info',
-        'success',
-        'warning',
-        'error'
-      ]
-    }
+        "primary",
+        "secondary",
+        "neutral",
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "info",
+        "success",
+        "warning",
+        "error",
+      ],
+    },
   },
   plugins: [
     { src: "~/plugins/apexcharts.client.ts", mode: "client" },
