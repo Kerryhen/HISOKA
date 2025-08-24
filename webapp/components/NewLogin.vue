@@ -27,6 +27,7 @@
             type="password"
             placeholder="******"
             class="w-full"
+            :ui="{ input: 'size-200' }"
           />
         </UFormField>
       </UForm>

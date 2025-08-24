@@ -6,11 +6,12 @@
   --color-cinza-50: #353333;
   --color-cinza-100: #2B2929;
   
-  --color-yellow: #EBD492;
+  
   --color-blue: #94C4BB;
   --color-red: #E8385A;
   --color-pink: #D75893;
   --color-white: #EEE4EB;
+  --color-yellow: #EBD492;
 
   --color-first:var(--color-white);
   --color-second:var(--color-blue);
