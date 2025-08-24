@@ -1,48 +1,56 @@
 <template>
-  <div class="p-4">
-    <h2 class="text-xl font-semibold mb-4">Sensor: >Exemplo</h2>
-
-    <!-- Controles para ajustar frequência, amplitude e janela -->
-    <div class="flex space-x-4 mb-6">
-      <div>
-        <label class="block text-sm">Frequência (Hz)</label>
-        <input type="range" v-model="frequency" :min="1" :max="500" class="w-48" />
-        <div>{{ frequency }} Hz</div>
-      </div>
-      <div>
-        <label class="block text-sm">Amplitude</label>
-        <input type="range" v-model="amplitude" :min="0.1" :max="10" step="0.1" class="w-48" />
-        <div>{{ amplitude }}</div>
-      </div>
-      <div>
-        <label class="block text-sm">Janela (s)</label>
-        <input type="range" v-model="windowSec" :min="1" :max="5" step="0.5" class="w-48" />
-        <div>{{ windowSec }} s</div>
-      </div>
-    </div>
-
-    <!-- Container do gráfico: ocupa 100% da largura e altura fixa ou dinâmica -->
-    <div ref="chartEl" class="chart-container border rounded p-2 w-full h-80"></div>
-  </div>
+  <div ref="chartEl"
+  :style="{
+    overflow: 'hidden',
+    height: heigthStyle,
+    width: WidthStyle
+  }"
+  ></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import uPlot from 'uplot'
 import 'uplot/dist/uPlot.min.css'
 
-// Parâmetros reativos para a senoide simulada
-const frequency = ref(50)
-const amplitude = ref(5)
-const windowSec = ref(2)     // janela visível em segundos
+const props = defineProps<{
+  sensorId: string,
+  frequency: number
+  amplitude: number,
+  windowSec: number,
+  sampleRate: number,
+  color:string,
+  heigth:number,
+  width:number,
+  
+}>()
 
-const chartEl = ref(null)
-let u = null
-let animationFrameId = null
+
+// Parâmetros reativos para a senoide simulada
+const frequency = computed(() => props.frequency)
+const amplitude = computed(() => props.amplitude)
+const windowSec = computed(() => props.windowSec)
+const sampleRate = computed(() => props.sampleRate)
+const sensorId = computed(() => props.sensorId)
+const color = computed(() => props.color)
+
+const hs = computed(() => props.heigth)
+const ws = computed(() => props.width)
+
+const heigthStyle = computed(() => {
+  return `calc(${(props.heigth )}px)`
+})
+
+const WidthStyle = computed(() => {
+  return `calc(${(props.width)}px)`
+})
+
+const chartEl = ref<HTMLElement | null>(null)
+let u: uPlot | null = null
+let animationFrameId: number | null = null
 
 // Gera senoide baseada em shift e comprimento
-const sampleRate = 1000    // 1000 Hz de amostragem base
-function generateSine(shift, length) {
+function generateSine(shift:number, length:number, sampleRate:number) {
   const xs = new Array(length)
   const ys = new Array(length)
   const dt = 1 / sampleRate
@@ -54,33 +62,38 @@ function generateSine(shift, length) {
 }
 
 // Função para (re)inicializar o gráfico com dimensões dinâmicas
-function initChart(shift) {
+function initChart(shift:number, sampleRate:number) {
+  u?.destroy()
   const length = Math.floor(windowSec.value * sampleRate)
-  const [xs, ys] = generateSine(shift, length)
+  const [xs, ys] = generateSine(shift, length, sampleRate)
 
   // Obtém dimensões do container
-  const width = chartEl.value.clientWidth
-  const height = chartEl.value.clientHeight
+  const width = chartEl?.value?.clientWidth
+  const height = chartEl?.value?.clientHeight
 
   const opts = {
     width,
     height,
+    legend:{
+      show:true
+    },
     scales: { x: { time: false }, y: { range: () => [-amplitude.value, amplitude.value] } },
-    series: [{}, { label: 'Senoide', stroke: 'red' }],
-    axes: [ { grid: { show: false } }, { grid: { show: true } } ],
+    series: [{}, {stroke: color.value }],
+    axes: [ {} ],
   }
 
   // Destrói instância anterior se existir
-  if (u) u.destroy()
+  
   u = new uPlot(opts, [xs, ys], chartEl.value)
 }
 
-function startLoop() {
+function startLoop(sampleRate:number) {
   let shift = 0
   const loop = () => {
     const length = Math.floor(windowSec.value * sampleRate)
-    const [xs, ys] = generateSine(shift, length)
-    u.setData([xs, ys])
+    const [xs, ys] = generateSine(shift, length, sampleRate)
+    u?.setData([xs, ys])
+    u?.setSize({width:ws.value, height:hs.value})
     shift++             //! Isso vai estourar a memória em algum momento. Verficar dps.
     animationFrameId = requestAnimationFrame(loop)
   }
@@ -89,25 +102,23 @@ function startLoop() {
 
 onMounted(() => {
   // Inicializa e inicia o loop de atualização
-  initChart(0)
-  startLoop()
+  initChart(0,sampleRate.value)
+  startLoop(sampleRate.value)
 
-  // Recria gráfico ao mudar janela ou resize da janela
-  watch([windowSec, amplitude, frequency], () => initChart(0))
-  window.addEventListener('resize', () => initChart(0))
+  // // Recria gráfico ao mudar janela ou resize da janela
+  // watch([windowSec, amplitude, frequency], () => initChart(0))
+  // window.addEventListener('resize', () => )
 })
 
 onBeforeUnmount(() => {
   if (u) u.destroy()
   cancelAnimationFrame(animationFrameId)
-  window.removeEventListener('resize', initChart)
+  // window.removeEventListener('resize', initChart)
 })
 </script>
 
 <style scoped>
 .chart-container {
-  width: 100%;
-  height: 20vh; /* Ajustável conforme necessidade */
   overflow: hidden;
 }
 </style>
