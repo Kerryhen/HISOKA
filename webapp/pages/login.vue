@@ -40,12 +40,18 @@ async function login({ username, password }): Promise<void> {
 </script>
 
 <template>
-  <NewLogin
+
+  <ProductCarrousel
+    class=""
+    :open="showModal">
+    
+  </ProductCarrousel>
+    <NewLogin
     :open="showModal"
     :username="username"
     :password="password"
     @update:username="username = $event"
     @update:password="password = $event"
     @submit="login"
-  />
+    />
 </template>

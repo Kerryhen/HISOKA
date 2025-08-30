@@ -33,6 +33,7 @@
     "mande": "^2.0.9",
     "nuxt": "^3.16.2",
     "nuxt-auth-utils": "^0.5.20",
+    "nuxt-svgo": "^4.2.6",
     "pinia": "^3.0.3",
     "typescript": "^5.8.3",
     "uplot": "^1.6.32",
