@@ -1,9 +1,8 @@
 <template>
   <div
-    class="flex w-full h-full"
+    class="flex w-full h-full pt-3"
     ref="chartEl"
     :style="{
-      overflow: 'hidden',
       height: heigthStyle,
       width: WidthStyle,
     }"
@@ -79,7 +78,7 @@ function initChart(shift: number, sampleRate: number) {
     },
     scales: {
       x: { time: false },
-      y: { range: () => [-amplitude.value, amplitude.value]},
+      y: { range: () => [-amplitude.value, amplitude.value] },
     },
     series: [{}, { stroke: color.value }],
     axes: [
