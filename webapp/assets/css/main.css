@@ -2,22 +2,21 @@
 @import "@nuxt/ui";
 
 @theme default {
-  --color-cinza:  #474343;
+  --color-cinza: #474343;
   --color-cinza-50: #353333;
-  --color-cinza-100: #2B2929;
-  
-  
-  --color-blue: #94C4BB;
-  --color-red: #E8385A;
-  --color-pink: #D75893;
-  --color-white: #EEE4EB;
-  --color-yellow: #EBD492;
+  --color-cinza-100: #2b2929;
 
-  --color-first:var(--color-white);
-  --color-second:var(--color-blue);
-  --color-third:var(--color-yellow);
-  --color-fourth:var(--color-pink);
-  --color-fifth:var(--color-red);
+  --color-blue: #94c4bb;
+  --color-red: #e8385a;
+  --color-pink: #d75893;
+  --color-white: #eee4eb;
+  --color-yellow: #ebd492;
+
+  --color-first: var(--color-white);
+  --color-second: var(--color-blue);
+  --color-third: var(--color-yellow);
+  --color-fourth: var(--color-pink);
+  --color-fifth: var(--color-red);
 
   --color-primary: var(--ui-primary);
   --color-primary-50: var(--ui-color-primary-50);
@@ -96,11 +95,10 @@
   --color-error-800: var(--ui-color-error-800);
   --color-error-900: var(--ui-color-error-900);
   --color-error-950: var(--ui-color-error-950);
-  
+
   --color-neutral: var(--color-cinza);
   --color-neutral-50: var(--color-cinza-50);
   --color-neutral-100: var(--color-cinza-100);
-    
 }
 
 :root {
@@ -123,9 +121,7 @@
   --ui-border-inverted: var(--ui-color-neutral-900);
 }
 
-
 .dark {
-
   --ui-primary: var(--color-primary);
   --ui-secondary: var(--color-scondary);
   --ui-neutral: var(--color-neutral);

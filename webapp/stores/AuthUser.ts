@@ -44,7 +44,7 @@ export const useAuthUserStore = defineStore("authUser", {
     },
 
     async setToken(token: UserToken | null) {
-      const cookie = useCookie<UserToken|null>("userCookie");
+      const cookie = useCookie<UserToken | null>("userCookie");
       cookie.value = token;
       refreshCookie("userCookie");
       this.cookie = token;
@@ -53,7 +53,7 @@ export const useAuthUserStore = defineStore("authUser", {
 
     async clearToken() {
       delete this.api.options.headers.Authorization;
-      await this.setToken(null)
+      await this.setToken(null);
     },
 
     async loadUser() {
@@ -68,10 +68,10 @@ export const useAuthUserStore = defineStore("authUser", {
       this.userId = payload.id;
     },
 
-    async logout(){
-      await this.clearToken()
-      await this.hydrateFromCookie()
-      this.clearUser()
+    async logout() {
+      await this.clearToken();
+      await this.hydrateFromCookie();
+      this.clearUser();
     },
 
     clearUser() {

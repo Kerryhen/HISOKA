@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (to.path === "/" && user.loggedIn) {
     return navigateTo("/graphs");
   }
-  
+
   if (to.path === "/login" && user.loggedIn) {
     return navigateTo("/");
   }

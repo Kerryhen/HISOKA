@@ -5,7 +5,7 @@
   "login": "Login",
   "connect": "Connect",
   "disconnect": "Disconnect",
-  "clear":"Clear",
+  "clear": "Clear",
   "logout": "Logout",
   "hello": "Hello",
   "no_sensor_data": "No sensor data available."
