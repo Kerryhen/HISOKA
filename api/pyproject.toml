@@ -41,7 +41,7 @@ concurrency = ["thread", "greenlet"]
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev app/main.py'
+run = 'fastapi run app/main.py'
 pre_test = 'task format'
 test = 'pytest -s -x --junitxml=junit/test-results.xml --cov=app --cov-report=xml -vv '
 post_test = 'coverage html'

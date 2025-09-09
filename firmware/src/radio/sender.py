@@ -4,13 +4,13 @@ import asyncio
 from machine import ADC, PWM, Timer
 import time, struct
 
-PKG_SIZE = 62
+PKG_SIZE = 125
 from machine import freq
 
 class Sender(ESPNOW_BASE):
-    def __init__(self, range=100, colect_freq=10_000, mvs_widow=4):
+    def __init__(self, range=100, colect_freq=1_000, mvs_widow=4):
         super().__init__()
-        freq(240000000)
+        freq(160000000)
         self.receiver_mac = None
         self.range = range
         self.data = Queue(100) #2x Max_freq?
@@ -21,12 +21,11 @@ class Sender(ESPNOW_BASE):
         self.clk.init()
         self.index = 0
         self.data_pack = []
-        self.DATA_FREQ = round(colect_freq/PKG_SIZE)*PKG_SIZE
-        print(self.DATA_FREQ)
+        self.DATA_FREQ = colect_freq
         self.MVS_WINDOW = mvs_widow
         self.raw_data = [0]*self.MVS_WINDOW
         self.mvs_data = [ ]
-        
+        self.data_pkg = self.mvs_data
         self.data_flag = asyncio.ThreadSafeFlag()
     
     def init_Timers(freqs, clbks):
@@ -35,25 +34,30 @@ class Sender(ESPNOW_BASE):
             timer.init(mode=Timer.PERIODIC, freq=freq, callback=clbk)
     
     def read_data_clbk(self, timer):
-        mvs = self.mvs_data         # Caching to local variable, should be fast.
-        raw_data = self.raw_data
-        mvsw = self.MVS_WINDOW
-        if len(mvs) >= PKG_SIZE:
-            data_pkg = struct.pack(f"!{len(mvs)}e", *mvs)
-            if not self.esp.send(self.receiver_mac, data_pkg):
-                # self.data_pack.append(data_pkg)
-                # self.data_flag.set()
-                #print(len(mvs), len(raw_data), len(self.data_pack))
-                print("deu ruim")
-            self.mvs_data = []
+        data = self.pin.read_u16()  # Faz a leitura 
+        
+        # Faz cache local das listas, (em teoria melhora a performance)
+        mvs = self.mvs_data       
+        # raw_data = self.raw_data
+        # mvsw = self.MVS_WINDOW
+        
+        # Move uma casa no vetor de média  [1,2,3,4] => [2,3,4,5]
+        # raw_data.append(data)       
+        # raw_data.pop(0)
 
-        #if len(mvs) < PKG_SIZE:
-        raw_data.append(self.pin.read_u16())
-        raw_data.pop(0)
-        mvs.append(sum(raw_data[:mvsw])/mvsw)
-        self.raw_data = raw_data
-        self.mvs_data = mvs
-
+        # Adiciona a média caso possível
+        if len(mvs) < PKG_SIZE:
+            # mvs.append(sum(raw_data[:mvsw])/mvsw)
+            mvs.append(data)
+            self.mvs_data = mvs
+            
+            # Case tenha preenchido um pacote, sinaliza.
+            if len(mvs) >= PKG_SIZE:
+                self.data_pkg = struct.pack(f"!{len(mvs)}e", *mvs)
+                self.data_flag.set()
+                self.t0 = time.ticks_us()
+        # self.raw_data = raw_data
+            
 
     async def listen_for_receiver(self):
         """Listen for broadcast messages from the receiver containing its MAC address."""
@@ -76,13 +80,13 @@ class Sender(ESPNOW_BASE):
             if not self.receiver_mac:
                 await asyncio.sleep(5)
             else:
-                await self.data_flag.wait()
-                self.data_flag.clear()
+                # Espera a sinalização
                 send_ok = False
-                while not send_ok and self.data_pack[0] is not None:
-                    send_ok = await self.esp.asend(self.receiver_mac, self.data_pack[0])
-                self.data_pack.pop(0)
-                await asyncio.sleep(0)
+                await self.data_flag.wait()
+                while not send_ok :
+                    send_ok = await self.esp.asend(self.receiver_mac, self.data_pkg)
+                print(time.ticks_diff(time.ticks_us(), self.t0))
+                self.mvs_data = []
 
     def get_async(self):
         return self.listen_for_receiver, self.send_data

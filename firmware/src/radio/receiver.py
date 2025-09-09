@@ -16,10 +16,11 @@ class Receiver(ESPNOW_BASE):
         self.config = "dawd"
         if files.has_config(wifi_config.CONFIG_FILE):
             self.config = ujson.dumps(wifi_config.load_wifi_config())
+        self.conected = False
 
     async def broadcast_mac(self):
         """Broadcast the receiver's MAC address to all sensors."""
-        while True:
+        while not self.conected:
             await self.broadcast(self.config.encode("utf-8"))
             print(f"Broadcasting MAC address {self.mac}")
             await asyncio.sleep(5) #every 5 seconds
@@ -31,10 +32,11 @@ class Receiver(ESPNOW_BASE):
             async for sensor_host, msg in self.esp:
                 if sensor_host not in self.queues:
                     # print(f"New sensor detected: {sensor_host}")
+                    self.conected = True
                     self.queues[sensor_host] = Queue(self.queue_size)
                     self.esp.add_peer(sensor_host)
                 await self.queues[sensor_host].put(msg)
-            await asyncio.sleep_ms(0)
+            # await asyncio.sleep_ms(0)
 
     async def plot_data(self):
         """Periodically process and plot values from the queues."""
@@ -43,9 +45,9 @@ class Receiver(ESPNOW_BASE):
                 if not queue.empty():
                     data = await queue.get()
                     queue.task_done()
-                    #print(f">{mac.hex()}:",struct.unpack(f"!{int(len(data)/2)}e",data), queue.qsize())
-                    #print(f">{mac.hex()}:{data}")
-                    print("amostras:",len(data)/2, "falta: ", queue.qsize())
+                    print(f">{mac.hex()}:",struct.unpack(f"!{int(len(data)/2)}e",data), queue.qsize())
+                    # print(f">{mac.hex()}:{data}")
+                    # print("amostras:",len(data)/2, "falta: ", queue.qsize())
             await asyncio.sleep(0)
 
     def get_async(self):

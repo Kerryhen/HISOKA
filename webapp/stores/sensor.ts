@@ -16,24 +16,41 @@ export const useSensorStore = defineStore("sensor", () => {
   let readLoopPromise: Promise<void> | null = null;
   let pipeDone: Promise<void> | null = null;
   let decoder: TextDecoderStream | null = null;
-
+  let full_line = ref("");
   let connectionStartTime = Date.now();
 
   function setConnectionStart() {
     connectionStartTime = Date.now();
   }
 
-  function parseSensorLine(line: string) {
-    const [id, timestampStr, valueStr] = line.trim().split(":");
-    if (id.startsWith(">")) {
-      const timestamp = parseInt(timestampStr, 10);
-      const value = parseInt(valueStr, 10);
-      if (!id || isNaN(timestamp) || isNaN(value)) return null;
-      return { id, timestamp, value };
-    }
+  function process(line){
+      line = line.replace(/\s/g, '');
+      if (line.indexOf(")") == -1){
+          return line.split(",");
+      }else{
+          let aux = line.split(")");
+          return [aux[0].split(","), -1,aux[1]].flat();
+      }
   }
 
-  async function connectSerial(baudRate = 9600) {
+  function process2(line){
+    return line.split("(");
+  }
+
+
+ 
+  function parseSensorLine(line: string, buffer_line) {
+      let new_line = process(line);
+      if (new_line.lastIndexOf(-1) == -1){
+          buffer_line.value+=new_line;
+      }else{
+        buffer_line.value+=new_line.slice(0, new_line.lastIndexOf(-1));
+        console.log(buffer_line.value);
+        buffer_line.value = new_line.slice(new_line.lastIndexOf(-1));
+      }
+  }
+
+  async function connectSerial(baudRate = 115200) {
     if (!("serial" in navigator)) {
       throw new Error("Web Serial API not supported.");
     }
@@ -53,24 +70,26 @@ export const useSensorStore = defineStore("sensor", () => {
   }
 
   async function readLoop() {
-    if (!reader) return;
+    if (!reader){
+      console.log("deu merda");
+      return; 
+    }
 
     try {
       while (!stopRequested) {
         const { value, done } = await reader.read();
         if (done) break;
-
         if (value) {
-          const parsed = parseSensorLine(value);
-          if (parsed) {
-            const { id, timestamp, value: val } = parsed;
-            if (!sensorData.value[id]) {
-              sensorData.value[id] = [[], []];
-              console.log(id);
-            }
-            sensorData.value[id][0].push(timestamp);
-            sensorData.value[id][1].push(val);
-          }
+          const parsed = parseSensorLine(value, full_line);
+          // if (parsed) {
+          //   const { id, timestamp, value: val } = parsed;
+          //   if (!sensorData.value[id]) {
+          //     sensorData.value[id] = [[], []];
+          //     console.log(id);
+          //   }
+          //   sensorData.value[id][0].push(timestamp);
+          //   sensorData.value[id][1].push(val);
+          // }
         }
       }
     } catch (err) {

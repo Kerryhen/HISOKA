@@ -1,5 +1,6 @@
 <template>
   <div class="p-5">
+    <!-- <iframe allowpaymentrequest allow="usb; fullscreen"></iframe> -->
     <UButtonGroup size="xl">
       <UButton
         v-if="!sensorStore.isConnected"

@@ -1,29 +1,9 @@
 <template>
-  <!-- <Serial /> -->
-  <!--   -->
-  <!-- <div class="w-screen h-screen grid grid-flow-col grid-rows-2">
-    <div class="row-span-2">
-      <div class="bg-blue">     
-        <div class="flex flex-row">
-          <div>
-            <label class="block text-sm">Frequência (Hz)</label>
-            <input type="range" v-model="frequency" :min="1" :max="500" class="w-48" />
-            <div>{{ frequency }} Hz</div>
-          </div>
-          <div>
-            <label class="block text-sm">Amplitude</label>
-            <input type="range" v-model="amplitude" :min="0.1" :max="10" step="0.1" class="w-48" />
-            <div>{{ amplitude }}</div>
-          </div>
-          <div>
-            <label class="block text-sm">Janela (s)</label>
-            <input type="range" v-model="windowSec" :min="1" :max="5" step="0.5" class="w-48" />
-            <div>{{ windowSec }} s</div>
-          </div>
-        </div>
-      </div>  -->
   <div class="h-screen flex flex-col">
-    <div class="flex h-1/50">s</div>
+    <div class="flex h-1/50">
+      teste
+      <Serial />
+    </div>
     <div
       class="h-full w-screen grid grid-flow-col grid-row-5 grid-cols-10 border-blue-600"
     >

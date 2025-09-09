@@ -11,23 +11,23 @@ const charBarEl = ref<HTMLElement | null>(null);
 let u: uPlot | null = null;
 
 function makeChart(data, series) {
-  u?.destroy
+  u?.destroy;
   const opts = {
     width: 800,
     height: 400,
     scales: {
       y: {
         range: [0, null],
-        ori: 1
+        ori: 1,
       },
     },
     axes: [
       {
-        	// rotate: -45,
+        // rotate: -45,
       },
       {
         //	show: false,
-        side: 3
+        side: 3,
       },
     ],
     legend: {
@@ -73,7 +73,6 @@ onMounted(() => {
   makeChart(u, data, series);
   document.body.appendChild(document.createElement("div"));
 });
-
 </script>
 
 <style scoped>
