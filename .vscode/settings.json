@@ -8,5 +8,7 @@
   "tailwindCSS.classAttributes": ["class", "ui"],
   "tailwindCSS.experimental.classRegex": [
     ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
+  ],
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python-envs.pythonProjects": []
 }
