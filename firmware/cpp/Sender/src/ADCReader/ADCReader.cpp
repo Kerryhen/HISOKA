@@ -86,13 +86,7 @@ void setup_adc() {
 
   // Optional: Set different attenaution (default is ADC_11db)
   analogContinuousSetAtten(ADC_11db);
-
-  // Setup ADC Continuous with following input:
-  // array of pins, count of the pins, how many conversions per pin in one cycle will happen, sampling frequency, callback function
-  analogContinuous(adc_pins, adc_pins_count, CONVERSIONS_PER_PIN, SAMPLE_ADC_FREQ, &adcComplete);
-
-  // Start ADC Continuous conversions
-  analogContinuousStart();
+    
 }
 
 void loop_adc(adc_data_callback_t clbk) {

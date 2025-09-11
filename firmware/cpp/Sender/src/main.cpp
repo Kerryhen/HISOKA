@@ -1,6 +1,7 @@
 #include "ESP32_NOW_Serial.h"
 #include <Arduino.h>
-#include "ADCTimers.h"
+#include "ADCReader/Timer.h"
+// #include "ADCTimers.h"
 #include "ADCReader/ADCReader.h"
 
 #ifdef MASTER
@@ -47,29 +48,25 @@ void setup() {
 
     for(;;){
       loop_now();
+      vTaskDelay(1);
     }
   }
   
   void Loop2Code(void * pvParameters) {
     Serial.println("Loop2");
-    setup_timers();
-    setup_adc();
-
+    
     AdcDataBuffer buffer;
+
+    Timer0_init(TImer0_config);
     
     for(;;){
-      loop_timers([&buffer](){
-        if (buffer.queueFull){
-            Serial.println(buffer.size());
-            Serial.println(buffer.deltaTimeFull); 
-            buffer.reset();
-          }
-      });
+      Timer0_loop([]() {
 
-        loop_adc([&buffer](adc_continuous_data_t* data) {
-            buffer.add(*data);
-            // delay(100);
-        });
+              // Serial.printf("Timer at %lu ms, value: %u\n",
+              //               TImer0_lastIsrAt,
+              //               TImer0_lastIsrValue);
+          });
+          vTaskDelay(1);
     }
 }
 
