@@ -1,5 +1,4 @@
 <template>
-  {{sensorId}}
   <div
     class="flex w-full h-full pt-3"
     ref="chartEl"

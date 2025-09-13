@@ -3,14 +3,12 @@
   <div class="h-screen flex flex-col">
     <div class="flex h-2/50">
       <Serial />
-      {{ sensorIds }}
     </div>
     <div
       class="h-full w-screen grid grid-flow-col grid-row-5 grid-cols-10 border-blue-600"
     >
       <div ref="headerRef" class="border-emerald-600 col-start-1 col-end-9">
         <div v-for="sensorId, sensor_index in sensorIds" :key="sensorId">
-          {{ sensorId }} {{ sensor_index }}
           <LineChart 
           :sensorId="sensorId"
           :frequency="frequency"
