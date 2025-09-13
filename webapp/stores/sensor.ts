@@ -104,7 +104,7 @@ export const useSensorStore = defineStore("sensor", () => {
           if (parsed) {
             const { id, timestamp, value: val } = parsed;
             if (!sensorData.value[id]) {
-              sensorData.value[id] = [new CircularBuffer(500), new CircularBuffer(500)];
+              sensorData.value[id] = [new CircularBuffer(5000), new CircularBuffer(5000)];
               console.log(id);
             }
             sensorData.value[id][0].add(timestamp);
