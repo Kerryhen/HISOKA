@@ -80,7 +80,7 @@ function initChart(shift: number, sampleRate: number) {
     },
     scales: {
       x: { time: false },
-      y: {auto:true}//{ range: () => [0, amplitude.value] },
+      y: {range:[0, 3.3]}//{ range: () => [0, amplitude.value] },
     },
     series: [{}, { stroke: color.value }],
     axes: [

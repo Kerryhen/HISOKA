@@ -66,7 +66,7 @@ export const useSensorStore = defineStore("sensor", () => {
     const [id, timestampStr, valueStr] = line.trim().split(":");
     if (id.startsWith(">")) {
       const timestamp = parseInt(timestampStr, 10);
-      const value = parseInt(valueStr, 10);
+      const value = parseFloat(valueStr);
       if (!id || isNaN(timestamp) || isNaN(value)) return null;
       return { id, timestamp, value };
     }
