@@ -1,4 +1,5 @@
 <template>
+  {{sensorId}}
   <div
     class="flex w-full h-full pt-3"
     ref="chartEl"
@@ -13,9 +14,11 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
+import { useSensorStore } from '~/stores/sensor'
+const sensorStore = useSensorStore()
 
 const props = defineProps<{
-  sensorId: string;
+  sensorId: string|null;
   frequency: number;
   amplitude: number;
   windowSec: number;
@@ -64,7 +67,7 @@ function generateSine(shift: number, length: number, sampleRate: number) {
 function initChart(shift: number, sampleRate: number) {
   u?.destroy();
   const length = Math.floor(windowSec.value * sampleRate);
-  const [xs, ys] = generateSine(shift, length, sampleRate);
+  const [xs, ys] = getData(shift, length, sampleRate);
 
   // Obtém dimensões do container
   const width = chartEl?.value?.clientWidth;
@@ -78,7 +81,7 @@ function initChart(shift: number, sampleRate: number) {
     },
     scales: {
       x: { time: false },
-      y: { range: () => [-amplitude.value, amplitude.value] },
+      y: {auto:true}//{ range: () => [0, amplitude.value] },
     },
     series: [{}, { stroke: color.value }],
     axes: [
@@ -120,7 +123,8 @@ function startLoop(sampleRate: number) {
   let shift = 0;
   const loop = () => {
     const length = Math.floor(windowSec.value * sampleRate);
-    const [xs, ys] = generateSine(shift, length, sampleRate);
+    const [xs, ys] = getData(shift, length, sampleRate);
+    
     u?.setData([xs, ys]);
     u?.setSize({ width: ws.value, height: hs.value });
     shift++; //! Isso vai estourar a memória em algum momento. Verficar dps.
@@ -144,6 +148,23 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrameId);
   // window.removeEventListener('resize', initChart)
 });
+
+function getSensorData(): [number[], number[]] {
+  if (sensorId.value && sensorStore.sensorData[sensorId.value]) {
+    // return sensorStore.sensorData[props.sensorId]
+    return sensorStore.getLastDataSlice(sensorId.value, 10)
+  }
+  return [[], []]
+}
+
+function getData(shift: number, length: number, sampleRate: number){
+  if (sensorId.value != null){
+    const [xs, ys] = getSensorData();
+    console.log(ys)
+    return [xs, ys];
+  }
+  return generateSine(shift, length, sampleRate);
+}
 </script>
 
 <style scoped></style>

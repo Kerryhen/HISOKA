@@ -5,9 +5,48 @@ type SensorReading = {
   value: number;
 };
 
+class CircularBuffer<T> {
+  private buffer: (T | undefined)[];
+  private index: number = 0;
+  private isFull: boolean = false;
+
+  constructor(private readonly size: number) {
+    if (size <= 0) throw new Error("Buffer size must be greater than 0");
+    this.buffer = new Array<T | undefined>(size);
+  }
+
+  add(item: T): void {
+    this.buffer[this.index] = item;
+    this.index = (this.index + 1) % this.size;
+    if (this.index === 0) {
+      this.isFull = true;
+    }
+  }
+
+  getBuffer(): T[] {
+    if (!this.isFull) {
+      // Retorna apenas os itens inseridos até agora
+      return this.buffer.slice(0, this.index) as T[];
+    }
+
+    // Reorganiza os dados em ordem de inserção
+    return [...this.buffer.slice(this.index), ...this.buffer.slice(0, this.index)] as T[];
+  }
+
+  clear(): void {
+    this.buffer = new Array<T | undefined>(this.size);
+    this.index = 0;
+    this.isFull = false;
+  }
+
+  get length(): number {
+    return this.isFull ? this.size : this.index;
+  }
+}
+
 export const useSensorStore = defineStore("sensor", () => {
   // readings keyed by sensor ID
-  const sensorData = ref<Record<string, [number[], number[]]>>({});
+  const sensorData = ref<Record<string, [CircularBuffer<number>, CircularBuffer<number>]>>({});
   const isConnected = ref(false);
 
   let port: SerialPort | null = null;
@@ -65,11 +104,11 @@ export const useSensorStore = defineStore("sensor", () => {
           if (parsed) {
             const { id, timestamp, value: val } = parsed;
             if (!sensorData.value[id]) {
-              sensorData.value[id] = [[], []];
+              sensorData.value[id] = [new CircularBuffer(500), new CircularBuffer(500)];
               console.log(id);
             }
-            sensorData.value[id][0].push(timestamp);
-            sensorData.value[id][1].push(val);
+            sensorData.value[id][0].add(timestamp);
+            sensorData.value[id][1].add(val);
           }
         }
       }
@@ -116,15 +155,15 @@ export const useSensorStore = defineStore("sensor", () => {
     if (!sensor) return [[], []];
 
     const [timestamps, values] = sensor;
-    if (timestamps.length === 0) return [[], []];
+    // if (timestamps.length === 0) return [[], []];
 
-    const latestTimestamp = timestamps[timestamps.length - 1];
-    const cutoff = latestTimestamp - seconds * 1000;
+    // const latestTimestamp = timestamps[timestamps.length - 1];
+    // const cutoff = latestTimestamp - seconds * 1000;
 
-    const startIndex = timestamps.findIndex((ts) => ts >= cutoff);
-    if (startIndex === -1) return [[], []];
+    // const startIndex = timestamps.findIndex((ts) => ts >= cutoff);
+    // if (startIndex === -1) return [[], []];
 
-    return [timestamps.slice(startIndex), values.slice(startIndex)];
+    return [timestamps.getBuffer(), values.getBuffer()];
   }
 
   return {
