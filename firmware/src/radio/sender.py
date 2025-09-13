@@ -12,8 +12,11 @@ class Sender(ESPNOW_BASE):
         self.range = range
         self.data = Queue(100) #2x Max_freq?
         self.pin = ADC(2)
+        self.pin.atten(ADC.ATTN_11DB)
+        self.pin.width(ADC.WIDTH_12BIT)
         self.clk = PWM(1, freq=500, duty_u16=32768)
         self.clk.init()
+        print("Sender")
 
     async def listen_for_receiver(self):
         """Listen for broadcast messages from the receiver containing its MAC address."""

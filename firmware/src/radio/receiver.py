@@ -10,16 +10,17 @@ class Receiver(ESPNOW_BASE):
         super().__init__()
         self.queues = {}  # CircularQueue for each sensor MAC
         self.queue_size = queue_size
+        print("Receiver")
        
-        self.config = ""
+        self.config = "broadcast"
         if wifi_config.has_config():
             self.config = ujson.dumps(wifi_config.load_wifi_config())
 
     async def broadcast_mac(self):
         """Broadcast the receiver's MAC address to all sensors."""
         while True:
-            self.broadcast(self.config.encode("utf-8"))
             # print(f"Broadcasting MAC address {self.mac}")
+            self.broadcast(self.config)
             await asyncio.sleep(5) #every 5 seconds
 
     async def listen_for_data(self):

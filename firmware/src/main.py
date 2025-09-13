@@ -19,7 +19,7 @@ def FactoryDevice(receiver):
 
 if __name__ == "__main__":
     try:
-        RECEIVER = False
+        RECEIVER = True
         device = FactoryDevice(RECEIVER)
 
         loop = asyncio.get_event_loop()   

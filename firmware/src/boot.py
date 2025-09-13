@@ -16,14 +16,14 @@ if __name__ == "__main__":
             ssid = config['ssid']
             password = config['password']
             
-            if wifi.connect_wifi(ssid, password):
-                ld.set(led.Color.GREEN)
-                wifi.disconnect_wifi()
-                ld.set(led.Color.OFF)
-                receiver.set_wifi_network(ssid, password)
-            else:
-                ld.set(led.Color.RED)
-                print("Falha ao conectar no Wi-Fi.")
+            # if wifi.connect_wifi(ssid, password):
+            #     ld.set(led.Color.GREEN)
+            #     wifi.disconnect_wifi()
+            #     ld.set(led.Color.OFF)
+            #     receiver.set_wifi_network(ssid, password)
+            # else:
+            #     ld.set(led.Color.RED)
+            #     print("Falha ao conectar no Wi-Fi.")
         else:
             ld.set(led.Color.RED)
             print("Nenhuma configuração de Wi-Fi encontrada.")
