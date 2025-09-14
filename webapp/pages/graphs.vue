@@ -10,6 +10,7 @@
       <div ref="headerRef" class="border-emerald-600 col-start-1 col-end-9">
         <div v-for="sensorId, sensor_index in sensorIds" :key="sensorId">
           <LineChart 
+          class="bg-neutral-50 border-neutral-100 border-4 rounded-2xl"
           :sensorId="sensorId"
           :frequency="frequency"
           :amplitude="amplitude"
@@ -41,7 +42,7 @@
         <div
           class="h-1/2 bg-neutral-50 border-neutral-100 border-4 rounded-2xl"
         >
-          <BarChart />
+          <!-- <BarChart /> -->
         </div>
         <div
           class="bg-neutral-50 border-neutral-100 border-4 rounded-2xl h-1/2"

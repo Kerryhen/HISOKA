@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pl-2">
     <UButtonGroup size="xl">
       <UButton
         v-if="!sensorStore.isConnected"
